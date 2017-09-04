@@ -8,7 +8,7 @@ import regex
 # arguments setting 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lcode', help='ISO 639-1 code of target language. See `lcodes.txt`.')
-parser.add_argument('--max_corpus_size', type=int, default=9000000000, help='the maximum size of the corpus. Feel free to adjust it according to your computing power.')
+parser.add_argument('--max_corpus_size', type=int, default=100000000, help='the maximum size of the corpus. Feel free to adjust it according to your computing power.')
 args = parser.parse_args()
 
 lcode = args.lcode
@@ -111,7 +111,7 @@ def build_corpus():
                 continue # it's okay as we have a pretty big corpus!
             elem.clear() # We need to save memory!
             if i % 1000 == 0: 
-                print (i, end=' ')
+                print ('.', end='')
                 fsize = os.path.getsize("data/{}.txt".format(lcode))
                 if fsize > max_corpus_size:
                     break
