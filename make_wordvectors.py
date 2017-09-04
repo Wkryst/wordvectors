@@ -55,7 +55,9 @@ def make_wordvectors():
     min_count = get_min_count(sents)
     model = gensim.models.Word2Vec(sents, size=vector_size, min_count=min_count,
                                    negative=num_negative, 
-                                   window=window_size)
+                                   window=window_size,
+                                   workers=10
+                                  )
     
     model.save('data/{}.bin'.format(lcode))
     
