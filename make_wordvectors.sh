@@ -14,10 +14,10 @@ echo "step 0. Make `data` directory and move there.`
 mkdir data; cd data
 
 echo "step 1. Download the stored wikipedia file to your disk."
-wget "https://dumps.wikimedia.org/${lcode}wiki/20161201/${lcode}wiki-20161201-pages-articles-multistream.xml.bz2"
+wget "https://dumps.wikimedia.org/${lcode}wiki/20170820/${lcode}wiki-20170820-pages-articles-multistream.xml.bz2"
 
 echo "step 2. Extract the bz2 file."
-bzip2 -d "${lcode}wiki-20161201-pages-articles-multistream.xml.bz2"
+bzip2 -d "${lcode}wiki-20170820-pages-articles-multistream.xml.bz2"
 
 cd ..
 echo "step 3. Build Corpus."

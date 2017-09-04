@@ -1,5 +1,4 @@
-# coding: utf-8
-#!/usr/bin/python2
+# %load ./make_wordvectors.py
 import nltk
 import os
 import codecs
@@ -8,10 +7,10 @@ import numpy as np
 
 # arguments setting 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lcode', help='ISO 639-1 code of target language. See `lcodes.txt`.')
-parser.add_argument('--vector_size', type=int, default=100, help='the size of a word vector')
+parser.add_argument('--lcode', default='pl', help='ISO 639-1 code of target language. See `lcodes.txt`.')
+parser.add_argument('--vector_size', type=int, default=300, help='the size of a word vector')
 parser.add_argument('--window_size', type=int, default=5, help='the maximum distance between the current and predicted word within a sentence.')
-parser.add_argument('--vocab_size', type=int, default=10000, help='the maximum vocabulary size')
+parser.add_argument('--vocab_size', type=int, default=20000, help='the maximum vocabulary size')
 parser.add_argument('--num_negative', type=int, default=5, help='the int for negative specifies how many “noise words” should be drawn')
 args = parser.parse_args()
 
@@ -40,9 +39,9 @@ def get_min_count(sents):
 def make_wordvectors():
     global lcode
     import gensim # In case you have difficulties installing gensim, you need to consider installing conda.
-    import cPickle as pickle
+#    from six.moves import cPickle as pickle
      
-    print "Making sentences as list..."
+    print ("Making sentences as list...")
     sents = []
     with codecs.open('data/{}.txt'.format(lcode), 'r', 'utf-8') as fin:
         while 1:
@@ -52,7 +51,7 @@ def make_wordvectors():
             words = line.split()
             sents.append(words)
 
-    print "Making word vectors..."   
+    print ("Making word vectors...")
     min_count = get_min_count(sents)
     model = gensim.models.Word2Vec(sents, size=vector_size, min_count=min_count,
                                    negative=num_negative, 
@@ -62,11 +61,11 @@ def make_wordvectors():
     
     # Save to file
     with codecs.open('data/{}.tsv'.format(lcode), 'w', 'utf-8') as fout:
-        for i, word in enumerate(model.index2word):
+        for i, word in enumerate(model.wv.index2word):
             fout.write(u"{}\t{}\t{}\n".format(str(i), word.encode('utf8').decode('utf8'),
                                               np.array_str(model[word])
                                               ))
 if __name__ == "__main__":
     make_wordvectors()
     
-    print "Done"
+    print ("Done")
