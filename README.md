@@ -1,53 +1,40 @@
-# How to train Word2Vec for your language...
+# Polskie modele Word2Vec
 
-Nie tylko Polski Word2Vec :)
+Repozytorium zawiera narzedzia służace do wygenerowania polskich korpusów językowych oraz modeli reprezentacji werktorowej słów word2vec.
+Do pracy wykorzystano następujące korpusy:
+* polskie napisy do filmów OpenSubtitles
+* polska Wikipedia
+* polskie Wikibooks
+* polskie Wictionary
 
-## Requirements
-* nltk >= 1.11.1
-* regex >= 2016.6.24
-* lxml >= 3.3.3
-* numpy >= 1.11.2
-* konlpy >= 0.4.4 (Only for Korean)
-* mecab (Only for Japanese)
-* pythai >= 0.1.3 (Only for Thai)
-* pyvi >= 0.0.7.2 (Only for Vietnamese)
-* jieba >= 0.38 (Only for Chinese)
-* gensim > =0.13.1 (for Word2Vec)
-* fastText (for [fasttext](https://github.com/facebookresearch/fastText))
-	
-## Background / References
-* Check [this](https://en.wikipedia.org/wiki/Word_embedding) to know what word embedding is.
-* Check [this](https://en.wikipedia.org/wiki/Word2vec) to quickly get a picture of Word2vec.
-* Check [this](https://github.com/facebookresearch/fastText) to install fastText.
-* Watch [this](https://www.youtube.com/watch?v=T8tQZChniMk&index=2&list=PL_6hBtWGKk2KdY3ANaEYbxL3N5YhRN9i0) to really understand what's happening under the hood of Word2vec.
-* Go get various English word vectors [here](https://github.com/3Top/word2vec-api) if needed.
+Szczególnej uwadze polecam korpus OpenSubtitles gdyż jako jedyny zawiera prawie wyłącznie dialogi. Tego typu korpus może mieć zastosowanie np. przy budowie interfejsów słownych czy głosowych typu człowiek-maszyna. 
 
-## Work Flow
-Quoted from `make_wordvectors.sh`:
-```
-#### Set your hyper-parameters here ####
-############## START ###################
-lcode="pl" # ISO 639-1 code of target language. See `lcodes.txt`.
-max_corpus_size=1000000000 # the maximum size of the corpus. Feel free to adjust it according to your computing power.
-vector_size=300 # the size of a word vector
-window_size=5 # the maximum distance between the current and predicted word within a sentence.
-vocab_size=20000 # the maximum vocabulary size
-num_negative=5 # the int for negative specifies how many “noise words” should be drawn
-############## END #####################
-echo "step 0. Make `data` directory and move there.`
-mkdir data; cd data
-echo "step 1. Download the stored wikipedia file to your disk."
-wget "https://dumps.wikimedia.org/${lcode}wiki/20170820/${lcode}wiki-20170820-pages-articles-multistream.xml.bz2"
-echo "step 2. Extract the bz2 file."
-bzip2 -d "${lcode}wiki-20170820-pages-articles-multistream.xml.bz2"
-cd ..
-echo "step 3. Build Corpus."
-python build_corpus.py --lcode=${lcode} --max_corpus_size=${max_corpus_size}
-echo "step 4. make wordvectors"
-python make_wordvectors.py --lcode=${lcode} --vector_size=${vector_size} --window_size=${window_size} --vocab_size=${vocab_size} --num_negative=${num_negative}
-```
-Alternatively: 
-* STEP 4-2. Run `fasttext.sh` to get fastText word vectors. 
+# Generowanie modeli
+Proces generowania modeli składa się z dwóch kroków. Pierwszym jest przygotoeanie pliku z korpusem tekstowym na podstawie danych źródłowych. Drugi to uczenie modelu word2vec na podstawie przygotowanego uprzednio korpusu.
 
-## Forked
-Forked from: https://github.com/Kyubyong/wordvectors
+## Przygotowanie korpusu
+Do utworzenia korpusów opartych o Wikipedię służy notatnik [Build Corpus.ipynb](Build%20Corpus.ipynb), dla korpusu OpenSubtitles jest to [Build OpenSubtitles Corpus.ipynb](Build%20OpenSubtitles%20Corpus.ipynb). W wyniu ich działania do katalogu `data` zostaną pobrane dane wejściowe w postaci archiwów a następnie zostaną one rozpakowane i wyekstraktowane z nich korpusy do plików z rozszerzeniem `.txt`.
+Pliki te mają wiele gigabajtów dla tego niezbędna jest odpwiednia ilość miejsca na dysku. Dla korpusu OpenSubtitles jest to ok 20GB, dla korpusów Wikipedii ok. 15GB. Pliki wynikowe zawierają jedno zdanie w każdej linii. Szczegółowy opis działania znajduje się w notatniku.
+
+## Tworzenie reprezentacji wektorowej
+Do tworzenia reprezentacji wektorowej słów, czyli modelu word2vec służy notatnik [Make WordVectors.ipynb](Make%20WordVectors.ipynb).
+Jego centralną częścią jest wywołanie funkcji `make_wordvectors()`. Parametry zostały dobrane tak aby wygenerować następujące modele:
+1. OpenSubtitles - Słownik milion słów, algorytm skip-gram, wektory w przestzeni 300 wymiarowej, okno 5, negatywny sampling 5
+1. Wikipedia - Słownik 50000 słów, algorytm skip-gram, wektory 300D, okno 5, neg. samppling 5
+1. Wikibooks - Słownik 50000 słów, algorytm skip-gram, wektory 300D, okno 5, neg. samppling 5
+1. Wiktionary - Słownik 50000 słów, algorytm skip-gram, wektory 300D, okno 5, neg. samppling 5
+
+Modele wynikowe zapisane są w postaci plików o nazwach w formacie:
+
+`w2v-773752559-1000000-300-5-5-OpenSubtitles2016.bin` - gdzie poszczególne elementy oznaczają:
+* `w2v` - skrót word2vector
+* `773752559` - ilość słów korpusie (w korpusie OpenSubtitles jako słowa traktowane są też niektóre znaki interpunkcyjne kończące zdanie, takie jak kropka, wykrzyknik, znak zapytania)
+* `1000000` - ilość unikalnych słów w korpusie
+* `300` - wymiarowość przestrzeni
+* `5` - wielkość okna
+* `5` - nwgatywny sampling
+* `OpenSubtitles2016` - nazwa korpusu źródłowego
+
+### Źródło
+Oryginalnie projekt powstał ze sklonowania repoztorium: https://github.com/Kyubyong/wordvectors
+Aktualnie zawiera jednak znaczą część zupełnie nowego kodu oraz optymalizacje powastałe na potrzeby obróbki polskich korpusów, w szczególnośći korpusu OpenSubtitles.
