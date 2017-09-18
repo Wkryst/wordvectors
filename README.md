@@ -6,7 +6,8 @@ Do pracy wykorzystano następujące korpusy:
 * polska Wikipedia
 * polskie Wikibooks
 * polskie Wictionary
-Szczególnej uwadze polecam korpus OpenSubtitles gdyż jako jedyny zawiera prawie wyłącznie dialogi. Tego typu korpus może mieć zastosowanie np. przy budowie interfejsów słownych czy głosowych typu człowiek-maczyna. 
+
+Szczególnej uwadze polecam korpus OpenSubtitles gdyż jako jedyny zawiera prawie wyłącznie dialogi. Tego typu korpus może mieć zastosowanie np. przy budowie interfejsów słownych czy głosowych typu człowiek-maszyna. 
 
 # Generowanie modeli
 Proces generowania modeli składa się z dwóch kroków. Pierwszym jest przygotoeanie pliku z korpusem tekstowym na podstawie danych źródłowych. Drugi to uczenie modelu word2vec na podstawie przygotowanego uprzednio korpusu.
